@@ -218,12 +218,29 @@ func (c *BookController) SaveBook() {
 	} else {
 		book.PrintSate = 0
 	}
+
+	bookIdentify := strings.TrimSpace(c.GetString("book_identify"))
+	if bookIdentify == "" {
+		c.JsonResult(6002, i18n.Tr(c.Lang, "message.project_id_empty"))
+	}
+	if ok, err := regexp.MatchString(conf.RegexpBookIdentify, bookIdentify); !ok || err != nil {
+		c.JsonResult(6003, i18n.Tr(c.Lang, "message.project_id_tips"))
+	}
+	if strings.Count(bookIdentify, "") > 50 {
+		c.JsonResult(6004, i18n.Tr(c.Lang, "message.project_id_length"))
+	}
+	if books, _ := book.FindByField("identify", bookIdentify, "book_id"); len(books) > 0 && books[0].BookId != book.BookId {
+		c.JsonResult(6006, i18n.Tr(c.Lang, "message.project_id_existed"))
+	}
+	book.Identify = bookIdentify
+
 	if err := book.Update(); err != nil {
 		c.JsonResult(6006, i18n.Tr(c.Lang, "message.failed"))
 	}
 	bookResult.BookName = bookName
 	bookResult.Description = description
 	bookResult.CommentStatus = commentStatus
+	bookResult.Identify = book.Identify
 
 	logs.Info("用户 [", c.Member.Account, "] 修改了项目 ->", book)
 
@@ -475,7 +492,7 @@ func (c *BookController) Create() {
 		if identify == "" {
 			c.JsonResult(6002, i18n.Tr(c.Lang, "message.project_id_empty"))
 		}
-		if ok, err := regexp.MatchString(`^[a-z]+[a-zA-Z0-9_\-]*$`, identify); !ok || err != nil {
+		if ok, err := regexp.MatchString(conf.RegexpBookIdentify, identify); !ok || err != nil {
 			c.JsonResult(6003, i18n.Tr(c.Lang, "message.project_id_tips"))
 		}
 		if strings.Count(identify, "") > 50 {
@@ -617,7 +634,7 @@ func (c *BookController) Import() {
 	if identify == "" {
 		c.JsonResult(6002, i18n.Tr(c.Lang, "message.project_id_empty"))
 	}
-	if ok, err := regexp.MatchString(`^[a-z]+[a-zA-Z0-9_\-]*$`, identify); !ok || err != nil {
+	if ok, err := regexp.MatchString(conf.RegexpBookIdentify, identify); !ok || err != nil {
 		c.JsonResult(6003, i18n.Tr(c.Lang, "message.project_id_tips"))
 	}
 	if !models.NewItemsets().Exist(itemId) {

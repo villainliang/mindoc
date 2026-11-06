@@ -22,6 +22,9 @@ const RegexpEmail = "^[a-zA-Z0-9.!#$%&'*+\\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-
 // 允许用户名中出现点号
 const RegexpAccount = `^[a-zA-Z0-9][a-zA-Z0-9\.-]{2,50}$`
 
+// RegexpBookIdentify 项目唯一标识：字母开头，后续可为大小写字母、数字及 - . _
+const RegexpBookIdentify = `^[a-zA-Z][a-zA-Z0-9_.-]*$`
+
 // PageSize 默认分页条数.
 const PageSize = 10
 

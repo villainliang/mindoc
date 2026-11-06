@@ -248,7 +248,7 @@
                             <label class="text-label">{{i18n $.Lang "blog.project_id"}}</label>
                             <input type="text" class="form-control"  placeholder="{{i18n $.Lang "message.project_id_placeholder"}}" name="identify" value="">
                             <div class="clearfix"></div>
-                            <p class="text">{{i18n $.Lang "blog.project_id_tips"}}</p>
+                            <p class="text">{{i18n $.Lang "message.project_id_tips"}}</p>
                         </div>
                         <div class="form-group">
                             <label class="text-label">{{i18n $.Lang "blog.project_desc"}}</label>
@@ -322,6 +322,8 @@
 <script src="{{cdnjs "/static/select2/4.0.5/js/i18n/zh-CN.js"}}"></script>
 <script src="{{cdnjs "/static/js/main.js"}}" type="text/javascript"></script>
 <script type="text/javascript">
+    var bookIdentifyPattern = /^[a-zA-Z][a-zA-Z0-9_.-]*$/;
+
     /**
      * 绘制项目封面
      * @param $id
@@ -551,6 +553,9 @@
             if (identify.length > 50) {
                 return showError("{{i18n $.Lang "message.project_id_length"}}");
             }
+            if (!bookIdentifyPattern.test(identify)) {
+                return showError("{{i18n $.Lang "message.project_id_tips"}}");
+            }
             var description = $.trim($("#description").val());
 
             if (description.length > 500) {
@@ -617,6 +622,12 @@
             var identify = $.trim($then.find("input[name='identify']").val());
             if (identify === "") {
                 return showError("{{i18n $.Lang "message.project_id_empty"}}","#import-book-form-error-message");
+            }
+            if (identify.length > 50) {
+                return showError("{{i18n $.Lang "message.project_id_length"}}","#import-book-form-error-message");
+            }
+            if (!bookIdentifyPattern.test(identify)) {
+                return showError("{{i18n $.Lang "message.project_id_tips"}}","#import-book-form-error-message");
             }
             var description = $.trim($then.find('textarea[name="description"]').val());
             if (description.length > 500) {

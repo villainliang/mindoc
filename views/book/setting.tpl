@@ -58,7 +58,8 @@
                             </div>
                             <div class="form-group">
                                 <label>{{i18n $.Lang "blog.project_id"}}</label>
-                                <input type="text" class="form-control" value="{{urlfor "DocumentController.Index" ":key" .Model.Identify}}" placeholder="{{i18n $.Lang "blog.project_id"}}" disabled>
+                                <input type="text" class="form-control" name="book_identify" id="bookIdentify" value="{{.Model.Identify}}" maxlength="50" placeholder="{{i18n $.Lang "message.project_id_placeholder"}}">
+                                <p class="text">{{i18n $.Lang "message.project_id_tips"}}</p>
                                 <p class="text">{{i18n $.Lang "message.project_id_desc"}}</p>
                             </div>
                             <div class="form-group">
@@ -401,19 +402,36 @@
         $("#token").on("focus",function () {
             $(this).select();
         });
+        var bookIdentifyPattern = /^[a-zA-Z][a-zA-Z0-9_.-]*$/;
+        var currentBookIdentify = {{printf "%q" .Model.Identify}};
+
         $("#bookEditForm").ajaxForm({
             beforeSubmit : function () {
                 var bookName = $.trim($("#bookName").val());
                 if (bookName === "") {
                     return showError("{{i18n $.Lang "message.project_name_empty"}}");
                 }
+                var bookIdentify = $.trim($("#bookIdentify").val());
+                if (bookIdentify === "") {
+                    return showError("{{i18n $.Lang "message.project_id_empty"}}");
+                }
+                if (bookIdentify.length > 50) {
+                    return showError("{{i18n $.Lang "message.project_id_length"}}");
+                }
+                if (!bookIdentifyPattern.test(bookIdentify)) {
+                    return showError("{{i18n $.Lang "message.project_id_tips"}}");
+                }
                 $("#btnSaveBookInfo").button("loading");
             },
             success : function (res) {
                 if(res.errcode === 0){
-                    showSuccess("{{i18n $.Lang "message.success"}}")
+                    if (res.data && res.data.identify && res.data.identify !== currentBookIdentify) {
+                        window.location = "{{.BaseUrl}}/book/" + encodeURIComponent(res.data.identify) + "/setting";
+                    } else {
+                        showSuccess("{{i18n $.Lang "message.success"}}");
+                    }
                 }else{
-                    showError("{{i18n $.Lang "message.failed"}}")
+                    showError(res.message || "{{i18n $.Lang "message.failed"}}");
                 }
                 $("#btnSaveBookInfo").button("reset");
             },
