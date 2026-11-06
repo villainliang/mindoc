@@ -35,3 +35,4 @@ database/mindoc.db
 /uploads/*.*
 !/uploads/.gitkeep
 calibre-*.txz
+tmp

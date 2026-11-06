@@ -1,4 +1,4 @@
-FROM golang:bookworm AS build
+FROM docker.xuanyuan.run/library/golang:bookworm AS build
 
 ARG TAG=0.0.1
 
@@ -31,7 +31,7 @@ ADD start.sh /go/src/github.com/mindoc-org/mindoc
 
 
 # upgrade to the latest
-FROM ubuntu:latest
+FROM docker.xuanyuan.run/library/ubuntu:latest
 
 # 切换默认shell为bash
 SHELL ["/bin/bash", "-c"]
